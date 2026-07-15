@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+  <article class="page">
+    <h1>contact</h1>
+    <p class="page-body">Drop me a message! :)</p>
+
+    <form id="contact-form" class="contact-form">
+      <input type="hidden" name="access_key" value="{{ web3forms_key }}" />
+      <input type="hidden" name="subject" value="New message from yumyumbeanfish" />
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" />
+
+      <label class="form-field">
+        <span>name</span>
+        <input type="text" name="name" required />
+      </label>
+
+      <label class="form-field">
+        <span>email</span>
+        <input type="email" name="email" required />
+      </label>
+
+      <label class="form-field">
+        <span>message</span>
+        <textarea name="message" rows="6" required></textarea>
+      </label>
+
+      <label class="form-field">
+        <span id="captcha-label">quick one: 2 + 2 = ?</span>
+        <input type="text" name="captcha" id="captcha-input" autocomplete="off" required />
+      </label>
+
+      <button type="submit" class="btn">send</button>
+      <p id="contact-status" class="contact-status"></p>
+    </form>
+
+    <script>
+    (function () {
+      var form = document.getElementById("contact-form");
+      var status = document.getElementById("contact-status");
+      var captchaLabel = document.getElementById("captcha-label");
+      var captchaInput = document.getElementById("captcha-input");
+      if (!form) return;
+
+      var captchaAnswer = 0;
+
+      function newCaptcha() {
+        var a = 1 + Math.floor(Math.random() * 9);
+        var b = 1 + Math.floor(Math.random() * 9);
+        captchaAnswer = a + b;
+        captchaLabel.textContent = "quick one: " + a + " + " + b + " = ?";
+        captchaInput.value = "";
+      }
+
+      newCaptcha();
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        if (parseInt(captchaInput.value, 10) !== captchaAnswer) {
+          status.textContent = "hmm, that's not quite right — try again.";
+          status.className = "contact-status err";
+          newCaptcha();
+          return;
+        }
+
+        status.textContent = "sending ...";
+        status.className = "contact-status";
+
+        var data = new FormData(form);
+        data.delete("captcha");
+        fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { Accept: "application/json" },
+          body: data,
+        })
+          .then(function (res) { return res.json(); })
+          .then(function (result) {
+            if (result.success) {
+              status.textContent = "message sent — thank you.";
+              status.className = "contact-status ok";
+              form.reset();
+            } else {
+              status.textContent = "something went wrong, please try again.";
+              status.className = "contact-status err";
+            }
+          })
+          .catch(function () {
+            status.textContent = "something went wrong, please try again.";
+            status.className = "contact-status err";
+          });
+      });
+    })();
+    </script>
+  </article>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="intro">
+    <figure class="polaroid">
+      <img src="{{ base_url }}{{ polaroid }}" alt="{{ polaroid_caption or 'Polaroid' }}" />
+      {% if polaroid_caption %}<figcaption>{{ polaroid_caption }}</figcaption>{% endif %}
+    </figure>
+    <div class="intro-text">
+      <p class="greeting" id="greeting">Hello.</p>
+      {{ content_html | safe }}
+    </div>
+  </section>
+
+  {% if featured %}
+  <section class="featured">
+    <div class="section-head">
+      <h2>Most Recent Photo</h2>
+    </div>
+    <a class="featured-photo {{ featured.orientation }}" href="{{ featured.link }}" target="_blank" rel="noopener">
+      <img src="{{ base_url }}{{ featured.image_preview or featured.image }}" alt="{{ featured.title }}" />
+    </a>
+    {% if featured.title %}<p class="featured-desc">{{ featured.title }}</p>{% endif %}
+  </section>
+  {% endif %}
+
+  <section class="gallery-preview">
+    <div class="section-head">
+      <h2>recent</h2>
+      <a class="more-link" href="{{ base_url }}/gallery/">all photos &rarr;</a>
+    </div>
+    {% set unpinned_photos = (photos | rejectattr('pinned') | list) %}
+    {% set grid_photos = (unpinned_photos | rejectattr('link', 'equalto', featured.link) | list) if featured else unpinned_photos %}
+    {% if grid_photos %}
+    <div class="grid">
+      {% for photo in grid_photos[:9] %}
+      <div class="tile-wrap">
+        <a class="tile" href="{{ photo.link }}" target="_blank" rel="noopener" title="{{ photo.title }}">
+          <img src="{{ base_url }}{{ photo.image }}" alt="{{ photo.title }}" loading="lazy" />
+        </a>
+        <div class="hover-preview {{ photo.orientation }}">
+          <div class="preview-backdrop"></div>
+          <div class="polaroid-preview">
+            <img src="{{ base_url }}{{ photo.image_preview or photo.image }}" alt="{{ photo.title }}" />
+            {% if photo.title %}<span class="preview-caption">{{ photo.title }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% elif not photos %}
+    <p class="empty-msg">no photos yet — the feed will be populated automatically soon.</p>
+    {% endif %}
+    <div class="glass-cta">
+      <a class="glass-link" href="https://glass.photo/yumyumbeanfish" target="_blank" rel="noopener">
+        <span class="glass-icon" aria-hidden="true"></span>
+        view all of my photos on glass
+      </a>
+    </div>
+  </section>
+
+  <script>
+  (function () {
+    var hour = new Date().getHours();
+    var text = "Hello.";
+    if (hour >= 5 && hour < 12) {
+      text = "Good morning.";
+    } else if (hour >= 12 && hour < 18) {
+      text = "Good afternoon.";
+    } else if (hour >= 18 && hour < 22) {
+      text = "Good evening.";
+    } else {
+      text = "Oh my gosh it's the middle of the night. Anyway...";
+    }
+    var el = document.getElementById("greeting");
+    if (el) { el.textContent = text; }
+  })();
+  </script>
+{% endblock %}

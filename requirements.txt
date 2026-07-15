@@ -1,0 +1,7 @@
+feedparser==6.0.11
+requests==2.32.3
+Pillow==10.4.0
+Jinja2==3.1.4
+Markdown==3.7
+PyYAML==6.0.2
+tzdata==2024.1

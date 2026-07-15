@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+  <article class="page">
+    <h1>records</h1>
+    {% if records %}
+    <p class="page-meta">{{ records|length }} records &middot; updated {{ records_updated_display }}</p>
+    {% if records_updated_fun %}<p class="page-meta-fun">{{ records_updated_fun }}</p>{% endif %}
+    <div class="grid grid-wide" id="records-grid">
+      {% for record in records %}
+      <a class="tile record-tile{{ ' record-tile-fallback' if record.cover_is_fallback else '' }}{{ ' is-hidden' if loop.index0 >= 6 else '' }}" href="{{ record.link }}" target="_blank" rel="noopener" title="{{ record.artist }} — {{ record.title }}">
+        <img src="{{ (base_url + record.cover) if record.cover_is_fallback else record.cover }}" alt="{{ record.artist }} — {{ record.title }}" loading="lazy" />
+        <div class="record-caption">
+          <span class="record-artist">{{ record.artist }}</span>
+          <span class="record-title">{{ record.title }}</span>
+        </div>
+      </a>
+      {% endfor %}
+      <div class="records-sentinel" id="records-sentinel" aria-hidden="true"></div>
+    </div>
+    <script>
+    (function () {
+      var grid = document.getElementById("records-grid");
+      var sentinel = document.getElementById("records-sentinel");
+      if (!grid || !sentinel) return;
+
+      var BATCH = 6;
+
+      function finish() {
+        observer.disconnect();
+        sentinel.remove();
+      }
+
+      function revealNext() {
+        var hidden = grid.querySelectorAll(".tile.is-hidden");
+        if (!hidden.length) {
+          finish();
+          return;
+        }
+        for (var i = 0; i < Math.min(BATCH, hidden.length); i++) {
+          hidden[i].classList.remove("is-hidden");
+        }
+        if (grid.querySelectorAll(".tile.is-hidden").length === 0) {
+          finish();
+        }
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) revealNext();
+        });
+      }, { rootMargin: "200px" });
+
+      observer.observe(sentinel);
+    })();
+    </script>
+    {% else %}
+    <p class="empty-msg">no records yet — the collection will be populated automatically soon.</p>
+    {% endif %}
+  </article>
+{% endblock %}

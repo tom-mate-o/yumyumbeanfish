@@ -1,0 +1,8 @@
+_site/
+__pycache__/
+*.pyc
+data/photos.json
+data/records.json
+static/thumbs/photos/*.jpg
+static/thumbs/records/*.jpg
+.DS_Store

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+  <article class="page">
+    <h1>photography</h1>
+    {% if photos %}
+    <p class="page-meta">updated {{ photos_updated_display }}</p>
+    {% if photos_updated_fun %}<p class="page-meta-fun">{{ photos_updated_fun }}</p>{% endif %}
+    <div class="grid grid-wide">
+      {% for photo in photos %}
+      <div class="tile-wrap">
+        <a class="tile" href="{{ photo.link }}" target="_blank" rel="noopener" title="{{ photo.title }}">
+          <img src="{{ base_url }}{{ photo.image }}" alt="{{ photo.title }}" loading="lazy" />
+        </a>
+        <div class="hover-preview {{ photo.orientation }}">
+          <div class="preview-backdrop"></div>
+          <div class="polaroid-preview">
+            <img src="{{ base_url }}{{ photo.image_preview or photo.image }}" alt="{{ photo.title }}" />
+            {% if photo.title %}<span class="preview-caption">{{ photo.title }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-msg">no photos yet — the feed will be populated automatically soon.</p>
+    {% endif %}
+    <div class="glass-cta">
+      <a class="glass-link" href="https://glass.photo/yumyumbeanfish" target="_blank" rel="noopener">
+        <span class="glass-icon" aria-hidden="true"></span>
+        view all of my photos on glass
+      </a>
+    </div>
+  </article>
+{% endblock %}

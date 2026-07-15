@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{% block title %}{{ title }}{% endblock %} // YUMYUMBEANFISH</title>
+<meta name="description" content="Tom — Photos, Records &amp; Notes" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📷</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{{ base_url }}/static/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <img class="site-avatar" src="{{ base_url }}/static/img/avatar.jpg" alt="Tom" />
+    <a class="site-title" href="{{ base_url }}/">YUMYUMBEANFISH</a>
+    <nav class="nav">
+      <a href="{{ base_url }}/" class="{{ 'active' if nav_active == 'index' else '' }}">index</a>
+      <span class="sep">/</span>
+      <a href="{{ base_url }}/gallery/" class="{{ 'active' if nav_active == 'gallery' else '' }}">photography</a>
+      <span class="sep">/</span>
+      <a href="{{ base_url }}/records/" class="{{ 'active' if nav_active == 'records' else '' }}">records</a>
+      <span class="sep">/</span>
+      <a href="{{ base_url }}/projects/" class="{{ 'active' if nav_active == 'projects' else '' }}">projects</a>
+      <span class="sep">/</span>
+      <a href="{{ base_url }}/about/" class="{{ 'active' if nav_active == 'about' else '' }}">about</a>
+      <span class="sep">/</span>
+      <a href="{{ base_url }}/contact/" class="{{ 'active' if nav_active == 'contact' else '' }}">contact</a>
+      <span class="sep">/</span>
+      <a href="{{ base_url }}/now/" class="{{ 'active' if nav_active == 'now' else '' }}">now</a>
+    </nav>
+  </header>
+
+  <main class="site-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <span>&copy; {{ build_year }} Tom Kra &middot; <a href="{{ base_url }}/colophon/">Colophon</a></span>
+  </footer>
+
+  <script>
+  (function () {
+    function isTouchLike() {
+      return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    }
+
+    if (isTouchLike()) {
+      document.documentElement.classList.add("is-touch");
+    }
+
+    function closeAllExcept(except) {
+      document.querySelectorAll(".tile-wrap.is-open").forEach(function (w) {
+        if (w !== except) w.classList.remove("is-open");
+      });
+    }
+
+    document.querySelectorAll(".tile-wrap").forEach(function (wrap) {
+      var tile = wrap.querySelector(".tile");
+      var backdrop = wrap.querySelector(".preview-backdrop");
+      if (!tile) return;
+
+      tile.addEventListener("click", function (e) {
+        if (!isTouchLike()) return;
+        if (wrap.classList.contains("is-open")) return;
+        e.preventDefault();
+        closeAllExcept(wrap);
+        wrap.classList.add("is-open");
+      });
+
+      if (backdrop) {
+        backdrop.addEventListener("click", function () {
+          wrap.classList.remove("is-open");
+        });
+      }
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!isTouchLike()) return;
+      if (e.target.closest(".tile-wrap.is-open")) return;
+      closeAllExcept(null);
+    });
+  })();
+  </script>
+</body>
+</html>
