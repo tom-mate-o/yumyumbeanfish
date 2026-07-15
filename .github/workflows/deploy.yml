@@ -19,7 +19,7 @@ concurrency:
 env:
   GLASS_RSS_URL: "https://glass.photo/yumyumbeanfish/rss"
   DISCOGS_USERNAME: "tolujukebox"
-  SITE_BASEURL: "/yumyumbeanfish"
+  SITE_BASEURL: ""
 
 jobs:
   build:
