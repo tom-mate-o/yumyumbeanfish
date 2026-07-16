@@ -1,6 +1,14 @@
 ---
 layout: page.html
 title: Now
-updated: 2026-07-15
 ---
-coming soon
+Working on my website.
+
+**Book:**
+...  
+  
+**Game:**
+...  
+  
+**Next travel destination:**
+Iceland

@@ -13,7 +13,7 @@
 </head>
 <body>
   <header class="site-header">
-    <img class="site-avatar" src="{{ base_url }}/static/img/avatar.jpg" alt="Tom" />
+    <a href="{{ base_url }}/"><img class="site-avatar" src="{{ base_url }}/static/img/avatar.jpg" alt="Tom" width="50" height="50" /></a>
     <a class="site-title" href="{{ base_url }}/">YUMYUMBEANFISH</a>
     <nav class="nav">
       <a href="{{ base_url }}/" class="{{ 'active' if nav_active == 'index' else '' }}">index</a>
@@ -31,6 +31,19 @@
       <a href="{{ base_url }}/now/" class="{{ 'active' if nav_active == 'now' else '' }}">now</a>
     </nav>
   </header>
+
+  <button class="hamburger" id="hamburger-btn" aria-label="Menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <nav class="hamburger-nav" id="hamburger-nav">
+    <a href="{{ base_url }}/" class="{{ 'active' if nav_active == 'index' else '' }}">index</a>
+    <a href="{{ base_url }}/gallery/" class="{{ 'active' if nav_active == 'gallery' else '' }}">photography</a>
+    <a href="{{ base_url }}/records/" class="{{ 'active' if nav_active == 'records' else '' }}">records</a>
+    <a href="{{ base_url }}/projects/" class="{{ 'active' if nav_active == 'projects' else '' }}">projects</a>
+    <a href="{{ base_url }}/about/" class="{{ 'active' if nav_active == 'about' else '' }}">about</a>
+    <a href="{{ base_url }}/contact/" class="{{ 'active' if nav_active == 'contact' else '' }}">contact</a>
+    <a href="{{ base_url }}/now/" class="{{ 'active' if nav_active == 'now' else '' }}">now</a>
+  </nav>
 
   <main class="site-main">
     {% block content %}{% endblock %}
@@ -81,6 +94,133 @@
       if (e.target.closest(".tile-wrap.is-open")) return;
       closeAllExcept(null);
     });
+  })();
+  </script>
+
+  <script>
+  (function () {
+    function elapsedYearsMonths(past, now) {
+      var years = now.getUTCFullYear() - past.getUTCFullYear();
+      var months = now.getUTCMonth() - past.getUTCMonth();
+      if (now.getUTCDate() < past.getUTCDate()) months -= 1;
+      if (months < 0) {
+        years -= 1;
+        months += 12;
+      }
+      if (years < 0 || (years === 0 && months < 0)) {
+        years = 0;
+        months = 0;
+      }
+      return [years, months];
+    }
+
+    function funAgoPhrase(past, now) {
+      var ym = elapsedYearsMonths(past, now);
+      var years = ym[0];
+      var months = ym[1];
+
+      if (years === 0 && months === 0) {
+        var hours = (now - past) / 3600000;
+        if (hours < 1) return "or... just now";
+        return "or... very recently";
+      }
+
+      var tripWord = years === 1 ? "trip" : "trips";
+      var moonWord = months === 1 ? "moon" : "moons";
+      return "or... " + years + " " + tripWord + " around the sun, " + months + " " + moonWord + " ago";
+    }
+
+    document.querySelectorAll(".page-meta-fun[data-updated-iso]").forEach(function (el) {
+      var iso = el.getAttribute("data-updated-iso");
+      if (!iso) return;
+      var past = new Date(iso);
+      if (isNaN(past.getTime())) return;
+      el.textContent = funAgoPhrase(past, new Date());
+    });
+  })();
+  </script>
+
+  <script>
+  (function () {
+    document.querySelectorAll("[data-load-more]").forEach(function (grid) {
+      var sentinel = grid.querySelector(".load-more-sentinel");
+      if (!sentinel) return;
+
+      var batch = parseInt(grid.getAttribute("data-load-more"), 10) || 6;
+
+      function finish() {
+        observer.disconnect();
+        sentinel.remove();
+      }
+
+      function revealNext() {
+        var hidden = grid.querySelectorAll(":scope > .is-hidden");
+        if (!hidden.length) {
+          finish();
+          return;
+        }
+        for (var i = 0; i < Math.min(batch, hidden.length); i++) {
+          hidden[i].classList.remove("is-hidden");
+        }
+        if (grid.querySelectorAll(":scope > .is-hidden").length === 0) {
+          finish();
+        }
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) revealNext();
+        });
+      }, { rootMargin: "200px" });
+
+      observer.observe(sentinel);
+    });
+  })();
+  </script>
+
+  <script>
+  (function () {
+    var btn = document.getElementById("hamburger-btn");
+    var nav = document.getElementById("hamburger-nav");
+    if (!btn || !nav) return;
+
+    var THRESHOLD = 200;
+    var lastY = window.scrollY;
+
+    function closeNav() {
+      nav.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+    }
+
+    function onScroll() {
+      var y = window.scrollY;
+
+      if (y <= THRESHOLD) {
+        btn.classList.remove("is-visible");
+        closeNav();
+      } else if (y < lastY) {
+        btn.classList.add("is-visible");
+      } else if (y > lastY) {
+        btn.classList.remove("is-visible");
+        closeNav();
+      }
+
+      lastY = y;
+    }
+
+    btn.addEventListener("click", function () {
+      var open = nav.classList.toggle("is-open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!nav.classList.contains("is-open")) return;
+      if (btn.contains(e.target) || nav.contains(e.target)) return;
+      closeNav();
+    });
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
   })();
   </script>
 </body>

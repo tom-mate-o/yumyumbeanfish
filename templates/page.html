@@ -4,8 +4,23 @@
     <h1>{{ title }}</h1>
     {% if updated_display %}
     <p class="page-meta">updated {{ updated_display }}</p>
-    {% if updated_fun %}<p class="page-meta-fun">{{ updated_fun }}</p>{% endif %}
+    {% if updated_iso %}<p class="page-meta-fun" data-updated-iso="{{ updated_iso }}"></p>{% endif %}
     {% endif %}
+
+    {% if polaroid %}
+    <div class="page-intro">
+      <figure class="page-intro-media polaroid">
+        <img src="{{ base_url }}{{ polaroid }}" alt="{{ polaroid_caption or '' }}" />
+        {% if polaroid_caption %}<figcaption>{{ polaroid_caption }}</figcaption>{% endif %}
+      </figure>
+      {% if intro %}
+      <div class="page-intro-text">
+        <p>{{ intro }}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
     <div class="page-body">
       {{ content_html | safe }}
     </div>

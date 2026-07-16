@@ -16,9 +16,9 @@
     <div class="section-head">
       <h2>Most Recent Photo</h2>
     </div>
-    <a class="featured-photo {{ featured.orientation }}" href="{{ featured.link }}" target="_blank" rel="noopener">
+    <div class="featured-photo {{ featured.orientation }}">
       <img src="{{ base_url }}{{ featured.image_preview or featured.image }}" alt="{{ featured.title }}" />
-    </a>
+    </div>
     {% if featured.title %}<p class="featured-desc">{{ featured.title }}</p>{% endif %}
   </section>
   {% endif %}

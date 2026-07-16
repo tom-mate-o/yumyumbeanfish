@@ -24,53 +24,19 @@ LOCAL_TZ = ZoneInfo("Europe/Vienna")
 MD = markdown.Markdown(extensions=["extra", "sane_lists"])
 
 
-def elapsed_years_months(past, now):
-    years = now.year - past.year
-    months = now.month - past.month
-    if now.day < past.day:
-        months -= 1
-    if months < 0:
-        years -= 1
-        months += 12
-    if years < 0 or (years == 0 and months < 0):
-        years, months = 0, 0
-    return years, months
-
-
-def fun_ago_phrase(past_utc, now_utc, years, months):
-    if years == 0 and months == 0:
-        hours = (now_utc - past_utc).total_seconds() / 3600
-        if hours < 1:
-            return "or... just now"
-        if hours < 24:
-            return "or... a few hours ago"
-        return "or... very recently"
-
-    trip_word = "trip" if years == 1 else "trips"
-    moon_word = "moon" if months == 1 else "moons"
-    return f"or... {years} {trip_word} around the sun, {months} {moon_word} ago"
-
-
 def format_updated(iso_string):
     if not iso_string:
-        return "", ""
+        return ""
     try:
         dt = datetime.fromisoformat(iso_string)
     except ValueError:
-        return iso_string, ""
+        return iso_string
 
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
 
     local_dt = dt.astimezone(LOCAL_TZ)
-    display = local_dt.strftime("%d %b %Y, %H:%M %Z")
-
-    past_utc = dt.astimezone(timezone.utc)
-    now_utc = datetime.now(timezone.utc)
-    years, months = elapsed_years_months(past_utc, now_utc)
-    fun = fun_ago_phrase(past_utc, now_utc, years, months)
-
-    return display, fun
+    return local_dt.strftime("%d %b %Y, %H:%M %Z")
 
 
 def coerce_updated_str(value):
@@ -89,6 +55,14 @@ def load_json_data(name, default):
         return default
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_series():
+    path = CONTENT_DIR / "series.yaml"
+    if not path.exists():
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or []
 
 
 def parse_frontmatter(text):
@@ -130,12 +104,15 @@ def render_content_pages(env, base_context):
         context["content_html"] = content_html
         context["nav_active"] = nav_active_for(md_path)
 
-        page_updated_display, page_updated_fun = "", ""
+        page_updated_iso = ""
         raw_updated = meta.get("updated")
         if raw_updated is not None:
-            page_updated_display, page_updated_fun = format_updated(coerce_updated_str(raw_updated))
-        context["updated_display"] = page_updated_display
-        context["updated_fun"] = page_updated_fun
+            page_updated_iso = coerce_updated_str(raw_updated)
+        elif md_path.stem == "now":
+            mtime = datetime.fromtimestamp(md_path.stat().st_mtime, tz=timezone.utc)
+            page_updated_iso = mtime.isoformat()
+        context["updated_display"] = format_updated(page_updated_iso)
+        context["updated_iso"] = page_updated_iso
 
         html = template.render(**context)
 
@@ -228,8 +205,8 @@ def build(clean=False):
     photos_data = load_json_data("photos.json", {"updated_at": None, "photos": []})
     records_data = load_json_data("records.json", {"updated_at": None, "records": []})
 
-    photos_updated_display, photos_updated_fun = format_updated(photos_data.get("updated_at") or "")
-    records_updated_display, records_updated_fun = format_updated(records_data.get("updated_at") or "")
+    photos_updated_iso = photos_data.get("updated_at") or ""
+    records_updated_iso = records_data.get("updated_at") or ""
 
     base_context = {
         "base_url": BASE_URL,
@@ -237,10 +214,11 @@ def build(clean=False):
         "photos": photos_data.get("photos", []),
         "featured": photos_data.get("featured"),
         "records": records_data.get("records", []),
-        "photos_updated_display": photos_updated_display,
-        "photos_updated_fun": photos_updated_fun,
-        "records_updated_display": records_updated_display,
-        "records_updated_fun": records_updated_fun,
+        "series": load_series(),
+        "photos_updated_display": format_updated(photos_updated_iso),
+        "photos_updated_iso": photos_updated_iso,
+        "records_updated_display": format_updated(records_updated_iso),
+        "records_updated_iso": records_updated_iso,
         "web3forms_key": os.environ.get("WEB3FORMS_ACCESS_KEY", "YOUR_WEB3FORMS_ACCESS_KEY"),
     }
 

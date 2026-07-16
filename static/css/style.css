@@ -97,6 +97,85 @@ color: var(--beanfish);
   padding: 0 20px 60px;
 }
 
+.hamburger {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  cursor: crosshair;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, border-color 0.15s ease;
+}
+
+.hamburger.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hamburger:hover {
+  border-color: var(--beanfish);
+}
+
+.hamburger span {
+  display: block;
+  width: 16px;
+  height: 1px;
+  background: var(--fg);
+  transition: background 0.15s ease;
+}
+
+.hamburger:hover span {
+  background: var(--beanfish);
+}
+
+.hamburger-nav {
+  position: fixed;
+  top: 60px;
+  right: 16px;
+  z-index: 99;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.hamburger-nav.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.hamburger-nav a {
+  color: var(--fg-dim);
+}
+
+.hamburger-nav a:hover {
+  color: var(--beanfish);
+  text-decoration: none;
+}
+
+.hamburger-nav a.active {
+  color: var(--fg);
+}
+
 .intro {
   display: flex;
   flex-direction: column;
@@ -109,9 +188,17 @@ color: var(--beanfish);
   background: #f2f0ea;
   padding: 14px 14px 42px;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
-  transform: rotate(-1.4deg);
+  transform: rotate(-1.4deg) translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   width: 230px;
   margin: 0 0 30px;
+  transition: transform 0.25s ease;
+  overflow: hidden;
+}
+
+.polaroid:hover {
+  transform: rotate(0deg) translateZ(0);
 }
 
 .polaroid img {
@@ -120,6 +207,8 @@ color: var(--beanfish);
   aspect-ratio: 3 / 4;
   object-fit: cover;
   background: #1a1a18;
+  transform: scale(1.03);
+  filter: contrast(1.1);
 }
 
 .polaroid figcaption {
@@ -128,6 +217,103 @@ color: var(--beanfish);
   color: #6b6858;
   margin-top: 10px;
   letter-spacing: 0.04em;
+}
+
+.page-intro {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 32px;
+  margin: 8px 0 60px;
+}
+
+.page-intro-media {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.page-intro-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-intro-text p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--fg-dim);
+}
+
+@media (max-width: 600px) {
+  .page-intro {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+}
+
+.series-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  margin: 8px 0 48px;
+}
+
+.series-item {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.series-item:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.series-media {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.series-media img {
+  aspect-ratio: 4 / 3;
+}
+
+.series-item:nth-child(even) .series-media {
+  transform: rotate(1.4deg) translateZ(0);
+}
+
+.series-item:nth-child(even) .series-media:hover {
+  transform: rotate(0deg) translateZ(0);
+}
+
+.series-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.series-content h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg);
+  margin: 0 0 10px;
+  font-weight: 400;
+}
+
+.series-content p {
+  font-size: 13px;
+  color: var(--fg-dim);
+  margin: 0 0 16px;
+}
+
+@media (max-width: 600px) {
+  .series-item,
+  .series-item:nth-child(even) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
 }
 
 .intro-text {
@@ -250,7 +436,7 @@ color: var(--beanfish);
   transition: transform 0.4s ease, filter 0.4s ease;
 }
 
-.tile:hover img {
+html:not(.is-touch) .tile:hover img {
   transform: scale(1.06);
   filter: grayscale(0%) contrast(1.05);
 }
@@ -361,11 +547,12 @@ html:not(.is-touch) .tile-wrap:hover .polaroid-preview {
   display: block;
 }
 
-.tile.is-hidden {
+.tile.is-hidden,
+.tile-wrap.is-hidden {
   display: none;
 }
 
-.records-sentinel {
+.load-more-sentinel {
   grid-column: 1 / -1;
   height: 1px;
 }
@@ -395,8 +582,9 @@ html:not(.is-touch) .tile-wrap:hover .polaroid-preview {
 }
 
 .btn:hover {
-  color: var(--fg);
-  border-color: var(--fg-dim);
+  color: var(--beanfish);
+  border-color: var(--beanfish);
+  text-decoration: none;
 }
 
 .record-caption {
@@ -488,6 +676,14 @@ html:not(.is-touch) .tile-wrap:hover .polaroid-preview {
   display: flex;
   justify-content: center;
   margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.glass-cta.end {
+  display: flex;
+  justify-content: center;
+margin-top: 32px;
+  margin-bottom: 0px;
 }
 
 .glass-link {
