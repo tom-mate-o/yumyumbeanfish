@@ -45,10 +45,10 @@
         <a class="tile" href="{{ photo.link }}" target="_blank" rel="noopener" title="{{ photo.title }}">
           <img src="{{ base_url }}{{ photo.image }}" alt="{{ photo.title }}" loading="lazy" />
         </a>
-        <div class="hover-preview {{ photo.orientation }}">
+        <div class="hover-preview {{ photo.orientation }}" aria-hidden="true">
           <div class="preview-backdrop"></div>
           <div class="polaroid-preview">
-            <img src="{{ base_url }}{{ photo.image_preview or photo.image }}" alt="{{ photo.title }}" />
+            <img src="{{ base_url }}{{ photo.image_preview or photo.image }}" alt="" />
             {% if photo.title %}<span class="preview-caption">{{ photo.title }}</span>{% endif %}
           </div>
         </div>

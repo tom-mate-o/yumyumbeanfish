@@ -4,5 +4,7 @@ __pycache__/
 data/photos.json
 data/records.json
 static/thumbs/photos/*.jpg
+static/thumbs/photos/*.webp
 static/thumbs/records/*.jpg
+static/thumbs/records/*.webp
 .DS_Store

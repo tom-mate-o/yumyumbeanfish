@@ -7,7 +7,7 @@
     <form id="contact-form" class="contact-form">
       <input type="hidden" name="access_key" value="{{ web3forms_key }}" />
       <input type="hidden" name="subject" value="New message from yumyumbeanfish" />
-      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" />
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
       <label class="form-field">
         <span>name</span>
@@ -30,7 +30,7 @@
       </label>
 
       <button type="submit" class="btn">send</button>
-      <p id="contact-status" class="contact-status"></p>
+      <p id="contact-status" class="contact-status" role="status" aria-live="polite"></p>
     </form>
 
     <script>

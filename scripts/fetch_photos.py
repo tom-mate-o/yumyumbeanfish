@@ -85,7 +85,7 @@ def make_square_thumbnail(img, out_path, size=THUMB_SIZE):
     cropped = img.crop((left, top, left + side, top + side))
     cropped = cropped.resize((size, size), Image.LANCZOS)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    cropped.save(out_path, "JPEG", quality=82, optimize=True)
+    cropped.save(out_path, "WEBP", quality=82, method=6)
 
 
 def make_preview(img, out_path, max_size=PREVIEW_MAX_SIZE):
@@ -94,15 +94,15 @@ def make_preview(img, out_path, max_size=PREVIEW_MAX_SIZE):
     new_size = (max(1, round(w * scale)), max(1, round(h * scale)))
     preview = img.resize(new_size, Image.LANCZOS)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    preview.save(out_path, "JPEG", quality=85, optimize=True)
+    preview.save(out_path, "WEBP", quality=85, method=6)
 
 
 def ensure_thumbnails(entry, image_url):
     slug = slug_for(entry, image_url)
-    thumb_web = f"{THUMB_URL_PREFIX}/{slug}.jpg"
-    preview_web = f"{PREVIEW_URL_PREFIX}/{slug}.jpg"
-    thumb_abs = os.path.join(THUMB_DIR, f"{slug}.jpg")
-    preview_abs = os.path.join(PREVIEW_DIR, f"{slug}.jpg")
+    thumb_web = f"{THUMB_URL_PREFIX}/{slug}.webp"
+    preview_web = f"{PREVIEW_URL_PREFIX}/{slug}.webp"
+    thumb_abs = os.path.join(THUMB_DIR, f"{slug}.webp")
+    preview_abs = os.path.join(PREVIEW_DIR, f"{slug}.webp")
 
     if os.path.exists(thumb_abs) and os.path.exists(preview_abs):
         orientation = "portrait"

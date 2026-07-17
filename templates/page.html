@@ -24,5 +24,39 @@
     <div class="page-body">
       {{ content_html | safe }}
     </div>
+
+    {% if apple_music_playlist %}
+    <div class="apple-music-embed">
+      <iframe
+        allow="autoplay *; encrypted-media *;"
+        frameborder="0"
+        height="{{ '150' if apple_music_compact else '450' }}"
+        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;"
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+        src="{{ apple_music_playlist | replace('https://music.apple.com', 'https://embed.music.apple.com') }}{{ '?theme=dark' if apple_music_dark else '' }}"
+        loading="lazy"
+        title="Apple Music playlist"
+      ></iframe>
+    </div>
+    {% endif %}
+
+    {% if nav_active == 'projects' and projects %}
+    <ol class="timeline">
+      {% for p in projects if p.name %}
+      <li class="timeline-item">
+        <div class="timeline-marker"><span class="timeline-dot" aria-hidden="true"></span></div>
+        <div class="timeline-content">
+          {% if p.year %}<span class="timeline-year">{{ p.year }}</span>{% endif %}
+          <h3 class="timeline-title">
+            {% if p.url %}<a href="{{ p.url }}" target="_blank" rel="noopener">{{ p.name }}<svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg></a>{% else %}{{ p.name }}{% endif %}
+          </h3>
+          {% if p.who %}<p class="timeline-who">{{ p.who }}</p>{% endif %}
+          {% if p.description %}<p class="timeline-desc">{{ p.description }}</p>{% endif %}
+          {% if p.stack %}<p class="timeline-stack">{{ p.stack | join(" · ") if p.stack is iterable and p.stack is not string else p.stack }}</p>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+    {% endif %}
   </article>
 {% endblock %}

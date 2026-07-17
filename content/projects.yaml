@@ -1,0 +1,22 @@
+
+
+- name: yumyumbeanfish.space
+  url: https://yumyumbeanfish.space
+  year: 2026
+  who: myself
+  stack: [Python, Jinja2, HTML, CSS, JavaScript]
+  description: This site — a custom Python static site generator with a dark analog, typewriter aesthetic.
+
+- name: Many, many websites for Webjongens
+  url: https://www.webjongens.nl/ons-werk
+  year: 2024-2026
+  who: Team Webjongens
+  stack: [Joomla, SCSS]
+  description: Over the last couple of years I've built many Joomla websites for Webjongens. I was mainly responsible for the front-end development and Joomla setup — turning our designers' design files into working websites, all built on YooTheme and styled with SCSS.
+
+- name: miriamsterl.com
+  url: https://miriamsterl.com
+  year: 2024
+  who: myself
+  stack: [Docusaurus, React, SCSS]
+  description: A personal website for my friend and Ocean Scientist Miriam Sterl.

@@ -65,6 +65,14 @@ def load_series():
         return yaml.safe_load(f) or []
 
 
+def load_projects():
+    path = CONTENT_DIR / "projects.yaml"
+    if not path.exists():
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or []
+
+
 def parse_frontmatter(text):
     if not text.startswith("---"):
         return {}, text
@@ -215,6 +223,7 @@ def build(clean=False):
         "featured": photos_data.get("featured"),
         "records": records_data.get("records", []),
         "series": load_series(),
+        "projects": load_projects(),
         "photos_updated_display": format_updated(photos_updated_iso),
         "photos_updated_iso": photos_updated_iso,
         "records_updated_display": format_updated(records_updated_iso),

@@ -6,16 +6,14 @@
 <title>{% block title %}{{ title }}{% endblock %} // YUMYUMBEANFISH</title>
 <meta name="description" content="Tom — Photos, Records &amp; Notes" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📷</text></svg>" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="{{ base_url }}/static/css/style.css" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
-    <a href="{{ base_url }}/"><img class="site-avatar" src="{{ base_url }}/static/img/avatar.jpg" alt="Tom" width="50" height="50" /></a>
+    <a href="{{ base_url }}/"><img class="site-avatar" src="{{ base_url }}/static/img/avatar.webp" alt="Tom" width="50" height="50" /></a>
     <a class="site-title" href="{{ base_url }}/">YUMYUMBEANFISH</a>
-    <nav class="nav">
+    <nav class="nav" aria-label="Primary">
       <a href="{{ base_url }}/" class="{{ 'active' if nav_active == 'index' else '' }}">index</a>
       <span class="sep">/</span>
       <a href="{{ base_url }}/gallery/" class="{{ 'active' if nav_active == 'gallery' else '' }}">photography</a>
@@ -32,10 +30,10 @@
     </nav>
   </header>
 
-  <button class="hamburger" id="hamburger-btn" aria-label="Menu" aria-expanded="false">
+  <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="hamburger-nav">
     <span></span><span></span><span></span>
   </button>
-  <nav class="hamburger-nav" id="hamburger-nav">
+  <nav class="hamburger-nav" id="hamburger-nav" aria-label="Menu" inert>
     <a href="{{ base_url }}/" class="{{ 'active' if nav_active == 'index' else '' }}">index</a>
     <a href="{{ base_url }}/gallery/" class="{{ 'active' if nav_active == 'gallery' else '' }}">photography</a>
     <a href="{{ base_url }}/records/" class="{{ 'active' if nav_active == 'records' else '' }}">records</a>
@@ -45,12 +43,12 @@
     <a href="{{ base_url }}/now/" class="{{ 'active' if nav_active == 'now' else '' }}">now</a>
   </nav>
 
-  <main class="site-main">
+  <main class="site-main" id="main-content">
     {% block content %}{% endblock %}
   </main>
 
   <footer class="site-footer">
-    <span>&copy; {{ build_year }} Tom Kra &middot; <a href="{{ base_url }}/colophon/">Colophon</a></span>
+    <span>&copy; {{ build_year }} Tom Kra &middot; <a href="{{ base_url }}/colophon/">Colophon</a> &middot; <a href="{{ base_url }}/imprint/">Imprint</a> &middot; <a href="{{ base_url }}/privacy/">Privacy</a></span>
   </footer>
 
   <script>
@@ -189,7 +187,18 @@
 
     function closeNav() {
       nav.classList.remove("is-open");
+      nav.setAttribute("inert", "");
       btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-label", "Open menu");
+      document.body.classList.remove("nav-open");
+    }
+
+    function openNav() {
+      nav.classList.add("is-open");
+      nav.removeAttribute("inert");
+      btn.setAttribute("aria-expanded", "true");
+      btn.setAttribute("aria-label", "Close menu");
+      document.body.classList.add("nav-open");
     }
 
     function onScroll() {
@@ -209,8 +218,11 @@
     }
 
     btn.addEventListener("click", function () {
-      var open = nav.classList.toggle("is-open");
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (nav.classList.contains("is-open")) {
+        closeNav();
+      } else {
+        openNav();
+      }
     });
 
     document.addEventListener("click", function (e) {
@@ -219,8 +231,30 @@
       closeNav();
     });
 
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.classList.contains("is-open")) {
+        closeNav();
+        btn.focus();
+      }
+    });
+
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
+  })();
+  </script>
+
+  <script>
+  (function () {
+    document.querySelectorAll("[data-email-user]").forEach(function (el) {
+      var user = el.getAttribute("data-email-user");
+      var domain = el.getAttribute("data-email-domain");
+      if (!user || !domain) return;
+      var address = user + "@" + domain;
+      var link = document.createElement("a");
+      link.href = "mailto:" + address;
+      link.textContent = address;
+      el.replaceWith(link);
+    });
   })();
   </script>
 </body>
